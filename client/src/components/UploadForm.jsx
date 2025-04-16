@@ -18,14 +18,24 @@ function UploadForm() {
     const data = new FormData();
     data.append('file', file);
     Object.entries(formData).forEach(([key, value]) => data.append(key, value));
-
+  
     try {
-      const res = await axios.post('http://localhost:5000/api/flatfile-to-clickhouse', data);
+      const res = await axios.post(
+        'http://localhost:5000/api/flatfile-to-clickhouse',
+        data,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
       alert(`Uploaded ${res.data.records} records successfully`);
     } catch (err) {
-      alert('Upload failed: ' + err.message);
+      console.error(err.response?.data || err.message);
+      alert('Upload failed: ' + (err.response?.data?.error || err.message));
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>
